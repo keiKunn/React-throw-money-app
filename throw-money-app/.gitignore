@@ -9,6 +9,7 @@
 /functions
 /firebase.json
 /firestore.indexes.json
+/.firebase
 /.firebaserc
 /firestore.rules
 /storage.rules 
