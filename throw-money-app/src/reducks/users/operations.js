@@ -1,6 +1,6 @@
 import { auth, db, FirebaseTimestamp } from '../../firebase/index'
 import { push, goBack } from 'connected-react-router'
-import { addUserAction } from './actions';
+import { addUserAction, loginAction } from './actions';
 
 // アカウント登録ボタン押下
 export const pushRegistUser = (username, email, password, confirmPassword) => {
@@ -53,9 +53,45 @@ export const pushRegistUser = (username, email, password, confirmPassword) => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        alert(`firebase auth ユーザ登録が失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`);
+        alert(`ユーザ登録が失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`);
         return false
       });
+  }
+}
+
+// ログイン
+export const login = (email, password) => {
+  return (dispatch) => {
+    // バリデーションチェック
+    if (email === "" || password === "") {
+      alert("必須項目が未入力です");
+      return false
+    }
+
+    auth.signInWithEmailAndPassword(email, password).then(result => {
+      const user = result.user;
+      const uid = user.uid;
+
+      // ユーザ情報取得
+      db.collection('users').doc(uid).get().then(snapshot => {
+        const data = snapshot.data();
+        // データ取得後、state変更
+        // (action引数のstateのキーは、ユーザ新規登録処理のuserInitialDataのキーを使用すること)
+        dispatch(loginAction({
+          role: data.role,
+          uid: uid,
+          userName: data.username
+        }))
+        //ダッシュボードへ遷移
+        dispatch(push('/Dashboard'))
+      })
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert(`ログインが失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`);
+      return false
+    });
   }
 
 }

@@ -6,9 +6,21 @@ export const addUserAction = (userState) => {
   return {
     type: ADD_USER,
     payload: {
-      isSignIn: false, //★必要？
-      userName: userState.userName,
-      passWord: userState.passWord
+      isSignIn: false,
+      userName: userState.userName
+    }
+  }
+}
+
+// ログイン
+export const loginAction = (userState) => {
+  return {
+    type: ADD_USER,
+    payload: {
+      isSignIn: true,
+      role: userState.role,
+      uid: userState.uid,
+      userName: userState.userName
     }
   }
 }
