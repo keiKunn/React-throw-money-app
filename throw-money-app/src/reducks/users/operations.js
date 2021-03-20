@@ -7,12 +7,7 @@ export const pushRegistUser = (username, email, password, confirmPassword) => {
   // firestoreにユーザ登録
   return (dispatch) => {
     // バリデーションチェック
-    if (
-      username === '' ||
-      email === '' ||
-      password === '' ||
-      confirmPassword === ''
-    ) {
+    if (!username || !email || !password || !confirmPassword) {
       alert('必須項目が未入力です');
       return false;
     }
@@ -76,7 +71,7 @@ export const pushRegistUser = (username, email, password, confirmPassword) => {
 export const login = (email, password) => {
   return (dispatch) => {
     // バリデーションチェック
-    if (email === '' || password === '') {
+    if (!email || !password) {
       alert('必須項目が未入力です');
       return false;
     }
