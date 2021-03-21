@@ -21,6 +21,7 @@ export const loginAction = (userState) => {
       role: userState.role,
       uid: userState.uid,
       userName: userState.userName,
+      remainMoney: userState.remainMoney,
     },
   }
 }
