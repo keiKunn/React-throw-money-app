@@ -8,9 +8,9 @@ export const UsersReducer = (state = initialState.users, action) => {
     case Actions.ADD_USER:
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       }
-      default:
-        return state
+    default:
+      return state
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 // テキストフォームのコンポーネント
 export const InputTextForm = (props) => {
@@ -6,10 +6,10 @@ export const InputTextForm = (props) => {
     <div>
       <label htmlFor={props.name}>
         {props.labelName}:
-      <input type={props.type} name={props.name} value={props.value} onChange={props.onChange} />
+        <input type={props.type} name={props.name} value={props.value} onChange={props.onChange} />
       </label>
     </div>
   )
 }
 
-export default InputTextForm;
+export default InputTextForm

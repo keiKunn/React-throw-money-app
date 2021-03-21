@@ -17,5 +17,7 @@ module.exports = {
     sourceType: 'module', //ES2015+の構文のなかでもimport/exportだけは特別扱いであり、専用の設定が必要。parserOptionsプロパティのなかで"sourceType": "module"を設定しないとパースできない
   },
   root: true, // 上位ディレクトリにある他のeslintrcを参照しないようにする
-  rules: {},
+  rules: {
+    'no-unused-vars': 'off',
+  },
 }

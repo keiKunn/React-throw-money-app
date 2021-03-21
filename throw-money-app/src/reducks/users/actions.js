@@ -1,5 +1,5 @@
 //Actionタイプ定義
-export const ADD_USER = 'ADD_USER';
+export const ADD_USER = 'ADD_USER'
 
 // ユーザ登録
 export const addUserAction = (userState) => {
@@ -7,8 +7,8 @@ export const addUserAction = (userState) => {
     type: ADD_USER,
     payload: {
       isSignIn: false,
-      userName: userState.userName
-    }
+      userName: userState.userName,
+    },
   }
 }
 
@@ -20,7 +20,7 @@ export const loginAction = (userState) => {
       isSignIn: true,
       role: userState.role,
       uid: userState.uid,
-      userName: userState.userName
-    }
+      userName: userState.userName,
+    },
   }
 }
