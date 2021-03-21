@@ -2,9 +2,10 @@ const initialState = {
   // ユーザ情報
   users: {
     isSignIn: false,
-    userName: "",
-    passWord: ""
-  }
+    role: '',
+    uid: '',
+    userName: '',
+  },
 }
 
-export default initialState;
+export default initialState
