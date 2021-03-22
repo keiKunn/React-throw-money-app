@@ -1,6 +1,6 @@
 import { auth, db, FirebaseTimestamp } from '../../firebase/index'
 import { push, goBack } from 'connected-react-router'
-import { addUserAction, loginAction } from './actions'
+import { addUserAction, loginAction, logoutAction } from './actions'
 
 // アカウント登録ボタン押下
 export const pushRegistUser = (username, email, password, confirmPassword) => {
@@ -109,5 +109,14 @@ export const login = (email, password) => {
         alert(`ログインが失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`)
         return false
       })
+  }
+}
+
+// ログアウト
+export const logout = () => {
+  return (dispatch) => {
+    dispatch(logoutAction)
+    //ログイン画面へ遷移
+    dispatch(push('/Login'))
   }
 }

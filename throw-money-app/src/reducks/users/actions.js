@@ -25,3 +25,17 @@ export const loginAction = (userState) => {
     },
   }
 }
+
+// ログアウト
+export const logoutAction = () => {
+  return {
+    type: ADD_USER,
+    payload: {
+      isSignIn: false,
+      role: '',
+      uid: '',
+      userName: '',
+      remainMoney: '',
+    },
+  }
+}
