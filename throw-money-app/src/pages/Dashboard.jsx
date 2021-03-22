@@ -6,15 +6,13 @@ const Dashboard = () => {
 
   // state保持データ確認用
   const userName = selector.users.userName
-  const uid = selector.users.uid
-  const isSignIn = selector.users.isSignIn.toString()
+  const remainMoney = selector.users.remainMoney
 
   return (
     <div>
       <h2>ダッシュボード</h2>
       <p>{userName}さん、ようこそ</p>
-      <p>uid : {uid}</p>
-      <p>isSignIn : {isSignIn}</p>
+      <p>残高：{remainMoney}</p>
     </div>
   )
 }

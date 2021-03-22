@@ -38,10 +38,12 @@ export const pushRegistUser = (username, email, password, confirmPassword) => {
           uid: uid,
           updated_time: timestamp,
           username: username,
+          remainMoney: '0',
         }
 
         // firestoreに登録
-        db.collection('users')
+        return db
+          .collection('users')
           .doc(uid)
           .set(userInitialData)
           .then((result) => {
@@ -94,6 +96,7 @@ export const login = (email, password) => {
                 role: data.role,
                 uid: uid,
                 userName: data.username,
+                remainMoney: data.remainMoney,
               })
             )
             //ダッシュボードへ遷移

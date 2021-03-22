@@ -5,6 +5,7 @@ const initialState = {
     role: '',
     uid: '',
     userName: '',
+    remainMoney: '',
   },
 }
 
