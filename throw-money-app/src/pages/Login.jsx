@@ -33,7 +33,7 @@ const Login = () => {
 
       <Button value="ログイン" onClick={() => dispatch(login(email, password))} />
 
-      <button onClick={() => dispatch(push('/Regist'))}>新規登録はこちら</button>
+      <button onClick={() => dispatch(push('/RegistUser'))}>新規登録はこちら</button>
     </div>
   )
 }

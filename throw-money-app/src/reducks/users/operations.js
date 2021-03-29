@@ -1,6 +1,42 @@
 import { auth, db, FirebaseTimestamp } from '../../firebase/index'
 import { push, goBack } from 'connected-react-router'
-import { addUserAction, loginAction } from './actions'
+import { addUserAction, loginAction, logoutAction } from './actions'
+
+// 認証状態のチェック
+export const checkAuthState = () => {
+  return (dispatch) => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        const uid = user.uid
+        // ユーザ情報取得
+        db.collection('users')
+          .doc(uid)
+          .get()
+          .then((snapshot) => {
+            // ログイン状態を最新化
+            const data = snapshot.data()
+            dispatch(
+              loginAction({
+                role: data.role,
+                uid: uid,
+                userName: data.username,
+                remainMoney: data.remainMoney,
+              })
+            )
+          })
+          .catch((error) => {
+            const errorCode = error.code
+            const errorMessage = error.message
+            alert(`ユーザ情報の取得が失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`)
+            return false
+          })
+      } else {
+        //ログイン画面へ遷移
+        dispatch(push('/Login'))
+      }
+    })
+  }
+}
 
 // アカウント登録ボタン押下
 export const pushRegistUser = (username, email, password, confirmPassword) => {
@@ -107,6 +143,26 @@ export const login = (email, password) => {
         const errorCode = error.code
         const errorMessage = error.message
         alert(`ログインが失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`)
+        return false
+      })
+  }
+}
+
+// ログアウト
+export const logout = () => {
+  return (dispatch) => {
+    auth
+      .signOut()
+      .then(() => {
+        // ログアウトが成功
+        dispatch(logoutAction)
+        //ログイン画面へ遷移
+        dispatch(push('/Login'))
+      })
+      .catch((error) => {
+        const errorCode = error.code
+        const errorMessage = error.message
+        alert(`ログアウトが失敗しました。| errorCode:${errorCode}, errorMessage:${errorMessage}`)
         return false
       })
   }
