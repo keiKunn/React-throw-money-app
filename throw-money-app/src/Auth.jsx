@@ -10,10 +10,8 @@ const Auth = ({ children }) => {
 
   // 副作用処理を1回目のマウント時のみ実行
   useEffect(() => {
-    if (!isSignIn) {
-      // 認証状態のチェック
-      dispath(checkAuthState())
-    }
+    // 認証状態のチェック
+    dispath(checkAuthState())
   }, [])
 
   if (!isSignIn) {
