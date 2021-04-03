@@ -5,9 +5,24 @@ import { addUserAction, loginAction, logoutAction } from './actions'
 // 認証状態のチェック
 export const checkAuthState = () => {
   return (dispatch) => {
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
       if (user) {
         const uid = user.uid
+        // 他のuser情報の取得
+        const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
+        // ダッシュボード内で表示用に成型(otherUsersRefのままではmap関数が使えないため)
+        let otherUsersInfo = []
+        otherUsersRef.forEach((doc) => {
+          const otherUserData = doc.data()
+          otherUsersInfo.push([
+            {
+              id: otherUserData.uid,
+              otherUserName: otherUserData.username,
+              otherUserWallet: otherUserData.remainMoney,
+            },
+          ])
+        })
+
         // ユーザ情報取得
         db.collection('users')
           .doc(uid)
@@ -21,6 +36,7 @@ export const checkAuthState = () => {
                 uid: uid,
                 userName: data.username,
                 remainMoney: data.remainMoney,
+                otherUsersInfo: otherUsersInfo,
               })
             )
           })

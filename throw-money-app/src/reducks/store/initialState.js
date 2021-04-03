@@ -6,6 +6,7 @@ const initialState = {
     uid: '',
     userName: '',
     remainMoney: '',
+    otherUsersInfo: [],
   },
 }
 
