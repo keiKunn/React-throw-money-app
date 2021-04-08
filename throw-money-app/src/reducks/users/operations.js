@@ -5,23 +5,23 @@ import { addUserAction, loginAction, logoutAction } from './actions'
 // 認証状態のチェック
 export const checkAuthState = () => {
   return (dispatch) => {
-    auth.onAuthStateChanged(async (user) => {
+    auth.onAuthStateChanged((user) => {
       if (user) {
         const uid = user.uid
         // 他のuser情報の取得
-        const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
-        // ダッシュボード内で表示用に成型(otherUsersRefのままではmap関数が使えないため)
-        let otherUsersInfo = []
-        otherUsersRef.forEach((doc) => {
-          const otherUserData = doc.data()
-          otherUsersInfo.push([
-            {
-              id: otherUserData.uid,
-              otherUserName: otherUserData.username,
-              otherUserWallet: otherUserData.remainMoney,
-            },
-          ])
-        })
+        // const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
+        // // ダッシュボード内で表示用に成型(otherUsersRefのままではmap関数が使えないため)
+        // let otherUsersInfo = []
+        // otherUsersRef.forEach((doc) => {
+        //   const otherUserData = doc.data()
+        //   otherUsersInfo.push([
+        //     {
+        //       id: otherUserData.uid,
+        //       otherUserName: otherUserData.username,
+        //       otherUserWallet: otherUserData.remainMoney,
+        //     },
+        //   ])
+        // })
 
         // ユーザ情報取得
         db.collection('users')
@@ -36,7 +36,7 @@ export const checkAuthState = () => {
                 uid: uid,
                 userName: data.username,
                 remainMoney: data.remainMoney,
-                otherUsersInfo: otherUsersInfo,
+                //otherUsersInfo: otherUsersInfo,
               })
             )
           })
@@ -139,8 +139,24 @@ export const login = (email, password) => {
           .collection('users')
           .doc(uid)
           .get()
-          .then((snapshot) => {
+          .then(async (snapshot) => {
             const data = snapshot.data()
+
+            // // 他のuser情報の取得
+            // const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
+            // // ダッシュボード内で表示用に成型(otherUsersRefのままではmap関数が使えないため)
+            // let otherUsersInfo = []
+            // otherUsersRef.forEach((doc) => {
+            //   const otherUserData = doc.data()
+            //   otherUsersInfo.push([
+            //     {
+            //       id: otherUserData.uid,
+            //       otherUserName: otherUserData.username,
+            //       otherUserWallet: otherUserData.remainMoney,
+            //     },
+            //   ])
+            // })
+
             // データ取得後、state変更
             // (action引数のstateのキーは、ユーザ新規登録処理のuserInitialDataのキーを使用すること)
             dispatch(
@@ -149,6 +165,7 @@ export const login = (email, password) => {
                 uid: uid,
                 userName: data.username,
                 remainMoney: data.remainMoney,
+                //otherUsersInfo: otherUsersInfo,
               })
             )
             //ダッシュボードへ遷移

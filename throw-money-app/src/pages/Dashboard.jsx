@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { db } from '../firebase/index'
 import { logout } from '../reducks/users/operations'
 import { Button } from '../component/'
 import Modal from 'react-modal'
@@ -11,14 +12,40 @@ const Dashboard = () => {
   const dispatch = useDispatch()
   const selector = useSelector((state) => state)
   // state保持データ確認用
+  const uid = selector.users.uid
   const userName = selector.users.userName
   const remainMoney = selector.users.remainMoney
-  const otherUsersInfo = selector.users.otherUsersInfo
-  //console.log('otherUsersInfo:' + JSON.stringify(otherUsersInfo))
-  //console.log(modalStyle)
 
   // モーダル制御
   const [modalIsOpen, setMpdalIsOpen] = useState(false)
+
+  // 他ユーザ情報
+  const [otherUsersInfo, setOtherUsersInfo] = useState([])
+  console.log('ダッシュボードコンポーネント内 otherUsersInfo:' + otherUsersInfo)
+
+  // 他ユーザ情報を取得する
+  // 第２引数にotherUsersInfoをセット (otherUsersInfoが変更された場合に実行)
+  useEffect(async () => {
+    // 他のuser情報の取得
+    console.log('uid:' + uid)
+    const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
+    // ダッシュボード内で表示用に成型(firebaseからの返却値ではmap関数が使えないため)
+    const otherUsersInfoTmp = []
+    otherUsersRef.forEach((doc) => {
+      const otherUserData = doc.data()
+      otherUsersInfoTmp.push([
+        {
+          id: otherUserData.uid,
+          otherUserName: otherUserData.username,
+          otherUserWallet: otherUserData.remainMoney,
+        },
+      ])
+    })
+    console.log('useEffect内 otherUserInfo' + otherUsersInfo)
+
+    //stateにセット
+    setOtherUsersInfo(otherUsersInfoTmp)
+  }, [otherUsersInfo])
 
   return (
     <div>
@@ -36,7 +63,7 @@ const Dashboard = () => {
           </tr>
           {/**他ユーザ情報の出力*/}
           {otherUsersInfo.map((userData, index) => {
-            console.log('userData:' + JSON.stringify(userData))
+            //console.log('userData:' + JSON.stringify(userData))
             return (
               <tr key={index}>
                 <td>{userData[0].otherUserName}</td>
