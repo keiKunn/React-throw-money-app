@@ -19,15 +19,30 @@ const Dashboard = () => {
   // モーダル制御
   const [modalIsOpen, setMpdalIsOpen] = useState(false)
 
+  // walletクリックイベント
+  // モーダルコンポーネントを返却
+  const handleClickWallet = (otherUserName, otherUserWallet) => {
+    setMpdalIsOpen(true)
+    return (
+      <Modal isOpen={modalIsOpen} style={modalStyle} onRequestClose={() => setMpdalIsOpen(false)}>
+        <p>ユーザ名：{otherUserName}</p>
+        <p>残高：{otherUserWallet}</p>
+        <p>
+          <button onClick={() => setMpdalIsOpen(false)}>閉じる</button>
+        </p>
+      </Modal>
+    )
+  }
+
   // 他ユーザ情報
   const [otherUsersInfo, setOtherUsersInfo] = useState([])
-  console.log('ダッシュボードコンポーネント内 otherUsersInfo:' + otherUsersInfo)
+  console.log('ダッシュボードコンポーネント otherUsersInfo:' + otherUsersInfo)
 
   // 他ユーザ情報を取得する
   // 第２引数にotherUsersInfoをセット (otherUsersInfoが変更された場合に実行)
   useEffect(async () => {
     // 他のuser情報の取得
-    console.log('uid:' + uid)
+    console.log('ダッシュボード useEffect:')
     const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
     // ダッシュボード内で表示用に成型(firebaseからの返却値ではmap関数が使えないため)
     const otherUsersInfoTmp = []
@@ -41,11 +56,10 @@ const Dashboard = () => {
         },
       ])
     })
-    console.log('useEffect内 otherUserInfo' + otherUsersInfo)
 
     //stateにセット
     setOtherUsersInfo(otherUsersInfoTmp)
-  }, [otherUsersInfo])
+  }, [])
 
   return (
     <div>
@@ -68,14 +82,16 @@ const Dashboard = () => {
               <tr key={index}>
                 <td>{userData[0].otherUserName}</td>
                 <td>
-                  <button onClick={() => setMpdalIsOpen(true)}>walletを見る: {userData[0].otherUserWallet}</button>
-                  <Modal isOpen={modalIsOpen} style={modalStyle} onRequestClose={() => setMpdalIsOpen(false)}>
+                  <button onClick={() => handleClickWallet(userData[0].otherUserName, userData[0].otherUserWallet)}>
+                    walletを見る: {userData[0].otherUserWallet}
+                  </button>
+                  {/* <Modal isOpen={modalIsOpen} style={modalStyle} onRequestClose={() => setMpdalIsOpen(false)}>
                     <p>ユーザ名：{userData[0].otherUserName}</p>
                     <p>残高：{userData[0].otherUserWallet}</p>
                     <p>
                       <button onClick={() => setMpdalIsOpen(false)}>閉じる</button>
                     </p>
-                  </Modal>
+                  </Modal> */}
                 </td>
                 <td>送る</td>
               </tr>

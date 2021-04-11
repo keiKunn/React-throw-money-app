@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import { checkAuthState } from './reducks/users/operations'
 
 const Auth = ({ children }) => {
-  const dispath = useDispatch()
+  console.log('Authコンポーネント')
+  const dispatch = useDispatch()
   const selector = useSelector((state) => state)
   // storeのstateからログイン状態を取得
   const isSignIn = selector.users.isSignIn
 
   // 副作用処理を1回目のマウント時のみ実行
   useEffect(() => {
+    console.log('Authコンポーネント useEffect')
     // 認証状態のチェック
-    dispath(checkAuthState())
+    dispatch(checkAuthState())
   }, [])
 
   if (!isSignIn) {
