@@ -111,38 +111,39 @@ export const sendMoneyOperation = (uid, otherUserData, money) => {
   return async (dispatch) => {
     // transaction start
     try {
-      // 金額の送付先ユーザ情報をfirestoreから取得
-      const otherUserRef = db.collection('users').doc(otherUserData.uid)
-      //console.log(otherUserRef)
-      const otherUserDoc = await otherUserRef.get()
-      if (otherUserDoc.exists) {
-        const timestamp = FirebaseTimestamp.now()
-        // 残高加算
-        const otherUserWallet = parseInt(otherUserDoc.get('remainMoney'), 10)
-        const culcOtherUserRemainMoney = otherUserWallet + parseInt(money, 10)
-        console.log('culcOtherUserRemainMoney:' + culcOtherUserRemainMoney)
-        await otherUserRef.update({
-          remainMoney: culcOtherUserRemainMoney.toString(10),
-          updated_time: timestamp,
-        })
+      await db.runTransaction(async (transaction) => {
+        // 金額の送付先ユーザ情報をfirestoreから取得
+        const otherUserRef = db.collection('users').doc(otherUserData.uid)
+        //console.log(otherUserRef)
+        const otherUserDoc = await transaction.get(otherUserRef)
+        if (otherUserDoc.exists) {
+          const timestamp = FirebaseTimestamp.now()
+          // 残高加算
+          const otherUserWallet = parseInt(otherUserDoc.get('remainMoney'), 10)
+          const culcOtherUserRemainMoney = otherUserWallet + parseInt(money, 10)
+          console.log('culcOtherUserRemainMoney:' + culcOtherUserRemainMoney)
+          await transaction.update(otherUserRef, {
+            remainMoney: culcOtherUserRemainMoney.toString(10),
+            updated_time: timestamp,
+          })
 
-        // ログインユーザ情報をfirestoreから取得
-        const userRef = db.collection('users').doc(uid)
-        const userDoc = await userRef.get()
-        // 残高減算
-        const userWallet = parseInt(userDoc.get('remainMoney'), 10)
-        const culcRemainMoney = userWallet - parseInt(money, 10)
-        console.log('culcRemainMoney:' + culcRemainMoney)
-        await userRef.update({
-          remainMoney: culcRemainMoney.toString(10),
-          updated_time: timestamp,
-        })
-        //ダッシュボードへ遷移
-        dispatch(push('/Dashboard'))
-      } else {
-        // エラーをthrow
-        console.log('No such document!')
-      }
+          // ログインユーザ情報をfirestoreから取得
+          const userRef = db.collection('users').doc(uid)
+          const userDoc = await transaction.get(userRef)
+          // 残高減算
+          const userWallet = parseInt(userDoc.get('remainMoney'), 10)
+          const culcRemainMoney = userWallet - parseInt(money, 10)
+          console.log('culcRemainMoney:' + culcRemainMoney)
+          await transaction.update(userRef, {
+            remainMoney: culcRemainMoney.toString(10),
+            updated_time: timestamp,
+          })
+          //ダッシュボードへ遷移
+          dispatch(push('/Dashboard'))
+        } else {
+          throw 'otherUserDoc not exist'
+        }
+      })
     } catch (error) {
       const errorMessage = error.message
       console.log(errorMessage)
