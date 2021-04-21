@@ -8,21 +8,6 @@ export const checkAuthState = () => {
     auth.onAuthStateChanged((user) => {
       if (user) {
         const uid = user.uid
-        // 他のuser情報の取得
-        // const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
-        // // ダッシュボード内で表示用に成型(otherUsersRefのままではmap関数が使えないため)
-        // let otherUsersInfo = []
-        // otherUsersRef.forEach((doc) => {
-        //   const otherUserData = doc.data()
-        //   otherUsersInfo.push([
-        //     {
-        //       id: otherUserData.uid,
-        //       otherUserName: otherUserData.username,
-        //       otherUserWallet: otherUserData.remainMoney,
-        //     },
-        //   ])
-        // })
-
         // ユーザ情報取得
         db.collection('users')
           .doc(uid)
@@ -36,7 +21,6 @@ export const checkAuthState = () => {
                 uid: uid,
                 userName: data.username,
                 remainMoney: data.remainMoney,
-                //otherUsersInfo: otherUsersInfo,
               })
             )
           })
@@ -119,6 +103,56 @@ export const pushRegistUser = (username, email, password, confirmPassword) => {
   }
 }
 
+// 金額を送る
+// uid:ログインユーザのuid
+// otherUserData:金額の送付先ユーザ情報
+// money：送金金額
+export const sendMoneyOperation = (uid, otherUserData, money) => {
+  return async (dispatch) => {
+    // transaction start
+    try {
+      // 金額の送付先ユーザ情報をfirestoreから取得
+      const otherUserRef = db.collection('users').doc(otherUserData.uid)
+      //console.log(otherUserRef)
+      const otherUserDoc = await otherUserRef.get()
+      if (otherUserDoc.exists) {
+        const timestamp = FirebaseTimestamp.now()
+        // 残高加算
+        const otherUserWallet = parseInt(otherUserDoc.get('remainMoney'), 10)
+        const culcOtherUserRemainMoney = otherUserWallet + parseInt(money, 10)
+        console.log('culcOtherUserRemainMoney:' + culcOtherUserRemainMoney)
+        await otherUserRef.update({
+          remainMoney: culcOtherUserRemainMoney.toString(10),
+          updated_time: timestamp,
+        })
+
+        // ログインユーザ情報をfirestoreから取得
+        const userRef = db.collection('users').doc(uid)
+        const userDoc = await userRef.get()
+        // 残高減算
+        const userWallet = parseInt(userDoc.get('remainMoney'), 10)
+        const culcRemainMoney = userWallet - parseInt(money, 10)
+        console.log('culcRemainMoney:' + culcRemainMoney)
+        await userRef.update({
+          remainMoney: culcRemainMoney.toString(10),
+          updated_time: timestamp,
+        })
+        //ダッシュボードへ遷移
+        dispatch(push('/Dashboard'))
+      } else {
+        // エラーをthrow
+        console.log('No such document!')
+      }
+    } catch (error) {
+      const errorMessage = error.message
+      console.log(errorMessage)
+      //ダッシュボードへ遷移
+      dispatch(push('/Dashboard'))
+    }
+    // transaction end
+  }
+}
+
 // ログイン
 export const login = (email, password) => {
   return (dispatch) => {
@@ -142,21 +176,6 @@ export const login = (email, password) => {
           .then(async (snapshot) => {
             const data = snapshot.data()
 
-            // // 他のuser情報の取得
-            // const otherUsersRef = await db.collection('users').where('uid', '!=', uid).get()
-            // // ダッシュボード内で表示用に成型(otherUsersRefのままではmap関数が使えないため)
-            // let otherUsersInfo = []
-            // otherUsersRef.forEach((doc) => {
-            //   const otherUserData = doc.data()
-            //   otherUsersInfo.push([
-            //     {
-            //       id: otherUserData.uid,
-            //       otherUserName: otherUserData.username,
-            //       otherUserWallet: otherUserData.remainMoney,
-            //     },
-            //   ])
-            // })
-
             // データ取得後、state変更
             // (action引数のstateのキーは、ユーザ新規登録処理のuserInitialDataのキーを使用すること)
             dispatch(
@@ -165,7 +184,6 @@ export const login = (email, password) => {
                 uid: uid,
                 userName: data.username,
                 remainMoney: data.remainMoney,
-                //otherUsersInfo: otherUsersInfo,
               })
             )
             //ダッシュボードへ遷移
