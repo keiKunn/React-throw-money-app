@@ -14,7 +14,7 @@ const Dashboard = () => {
   // state保持データ確認用
   const uid = selector.users.uid
   const userName = selector.users.userName
-  const [remainMoney, setRemnainMoney] = useState(selector.users.remainMoney)
+  const [remainMoney, setRemainMoney] = useState(selector.users.remainMoney)
 
   // モーダル制御
   // walletを見る
@@ -49,7 +49,16 @@ const Dashboard = () => {
   // 送金実行
   const handleClickSendMoney = () => {
     console.log('handleSendMoney:送金実行')
+    if (!sendMoney) {
+      alert('金額を入力してください')
+      return false
+    }
     dispatch(sendMoneyOperation(uid, modalOtherUserData, sendMoney))
+    // 送金モーダルを閉じる
+    setMpdalIsOpenSend(false)
+    //残高更新
+    console.log('selector.users.remainMoney:' + selector.users.remainMoney)
+    setRemainMoney(selector.users.remainMoney)
   }
 
   // 他ユーザ情報

@@ -1,6 +1,7 @@
 //Actionタイプ定義
 export const ADD_USER = 'ADD_USER'
 export const LOGIN_USER = 'LOGIN_USER'
+export const SEND_MONEY = 'SEND_MONEY'
 export const LOGOUT_USER = 'LOGOUT_USER'
 
 // ユーザ登録
@@ -23,6 +24,16 @@ export const loginAction = (userState) => {
       role: userState.role,
       uid: userState.uid,
       userName: userState.userName,
+      remainMoney: userState.remainMoney,
+    },
+  }
+}
+
+// 送金
+export const sendMoneyAction = (userState) => {
+  return {
+    type: SEND_MONEY,
+    payload: {
       remainMoney: userState.remainMoney,
     },
   }

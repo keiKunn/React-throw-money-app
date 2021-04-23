@@ -1,6 +1,6 @@
 import { auth, db, FirebaseTimestamp } from '../../firebase/index'
 import { push, goBack } from 'connected-react-router'
-import { addUserAction, loginAction, logoutAction } from './actions'
+import { addUserAction, loginAction, sendMoneyAction, logoutAction } from './actions'
 
 // 認証状態のチェック
 export const checkAuthState = () => {
@@ -116,6 +116,9 @@ export const sendMoneyOperation = (uid, otherUserData, money) => {
         const otherUserRef = db.collection('users').doc(otherUserData.uid)
         //console.log(otherUserRef)
         const otherUserDoc = await transaction.get(otherUserRef)
+        // ログインユーザ情報をfirestoreから取得
+        const userRef = db.collection('users').doc(uid)
+        const userDoc = await transaction.get(userRef)
         if (otherUserDoc.exists) {
           const timestamp = FirebaseTimestamp.now()
           // 残高加算
@@ -127,9 +130,6 @@ export const sendMoneyOperation = (uid, otherUserData, money) => {
             updated_time: timestamp,
           })
 
-          // ログインユーザ情報をfirestoreから取得
-          const userRef = db.collection('users').doc(uid)
-          const userDoc = await transaction.get(userRef)
           // 残高減算
           const userWallet = parseInt(userDoc.get('remainMoney'), 10)
           const culcRemainMoney = userWallet - parseInt(money, 10)
@@ -138,7 +138,13 @@ export const sendMoneyOperation = (uid, otherUserData, money) => {
             remainMoney: culcRemainMoney.toString(10),
             updated_time: timestamp,
           })
-          //ダッシュボードへ遷移
+          // ログインユーザのstate更新
+          dispatch(
+            sendMoneyAction({
+              remainMoney: culcRemainMoney.toString(10),
+            })
+          )
+          // ダッシュボードへ遷移
           dispatch(push('/Dashboard'))
         } else {
           throw 'otherUserDoc not exist'
