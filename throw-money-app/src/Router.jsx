@@ -4,6 +4,7 @@ import { Login, RegistUser, Dashboard, Home } from './pages'
 import Auth from './Auth'
 
 const Router = () => {
+  console.log('Routerコンポーネント')
   return (
     <Switch>
       <Route exact path="/Login" component={Login} />

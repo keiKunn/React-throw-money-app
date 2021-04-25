@@ -151,7 +151,7 @@ export const sendMoneyOperation = (uid, otherUserData, money) => {
         }
       })
     } catch (error) {
-      const errorMessage = error.message
+      const errorMessage = error
       console.log(errorMessage)
       //ダッシュボードへ遷移
       dispatch(push('/Dashboard'))

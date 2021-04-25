@@ -47,19 +47,22 @@ const Dashboard = () => {
     [setSendMoney]
   )
   // 送金実行
-  const handleClickSendMoney = () => {
-    console.log('handleSendMoney:送金実行')
-    if (!sendMoney) {
-      alert('金額を入力してください')
-      return false
-    }
-    dispatch(sendMoneyOperation(uid, modalOtherUserData, sendMoney))
-    // 送金モーダルを閉じる
-    setMpdalIsOpenSend(false)
-    //残高更新
-    console.log('selector.users.remainMoney:' + selector.users.remainMoney)
-    setRemainMoney(selector.users.remainMoney)
-  }
+  const handleClickSendMoney = useCallback(
+    (modalOtherUserData, sendMoney) => {
+      console.log('handleSendMoney:送金実行')
+      if (!sendMoney) {
+        alert('金額を入力してください')
+        return false
+      }
+      dispatch(sendMoneyOperation(uid, modalOtherUserData, sendMoney))
+      // 送金モーダルを閉じる
+      setMpdalIsOpenSend(false)
+      //残高更新
+      console.log('selector.users.remainMoney:' + selector.users.remainMoney)
+      setRemainMoney(selector.users.remainMoney)
+    },
+    [remainMoney, dispatch]
+  )
 
   // 他ユーザ情報
   const [otherUsersInfo, setOtherUsersInfo] = useState([])
@@ -151,7 +154,7 @@ const Dashboard = () => {
           value={sendMoney}
           onChange={inputSendMoney}
         />
-        <Button value="送金実行" onClick={() => handleClickSendMoney()} />
+        <Button value="送金実行" onClick={() => handleClickSendMoney(modalOtherUserData, sendMoney)} />
 
         <p>
           <button onClick={() => setMpdalIsOpenSend(false)}>閉じる</button>
