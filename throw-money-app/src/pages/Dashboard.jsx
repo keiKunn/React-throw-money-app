@@ -5,6 +5,7 @@ import { logout, sendMoneyOperation } from '../reducks/users/operations'
 import { Button, InputTextForm } from '../component/'
 import Modal from 'react-modal'
 import { modalStyle } from './ModalStyle'
+import { getUserRemainMoney } from '../reducks/users/selectors'
 
 Modal.setAppElement('#root')
 
@@ -15,6 +16,9 @@ const Dashboard = () => {
   const uid = selector.users.uid
   const userName = selector.users.userName
   const [remainMoney, setRemainMoney] = useState(selector.users.remainMoney)
+
+  //const testwallet = getUserRemainMoney(selector)
+  const testwallet = selector.users.remainMoney
 
   // モーダル制御
   // walletを見る
@@ -47,22 +51,38 @@ const Dashboard = () => {
     [setSendMoney]
   )
   // 送金実行
-  const handleClickSendMoney = useCallback(
-    (modalOtherUserData, sendMoney) => {
-      console.log('handleSendMoney:送金実行')
-      if (!sendMoney) {
-        alert('金額を入力してください')
-        return false
-      }
-      dispatch(sendMoneyOperation(uid, modalOtherUserData, sendMoney))
-      // 送金モーダルを閉じる
-      setMpdalIsOpenSend(false)
-      //残高更新
-      console.log('selector.users.remainMoney:' + selector.users.remainMoney)
-      setRemainMoney(selector.users.remainMoney)
-    },
-    [remainMoney, dispatch]
-  )
+  // const handleClickSendMoney = useCallback(
+  //   (modalOtherUserData, sendMoney) => {
+  //     console.log('handleSendMoney:送金実行')
+  //     if (!sendMoney) {
+  //       alert('金額を入力してください')
+  //       return false
+  //     }
+  //     dispatch(sendMoneyOperation(uid, modalOtherUserData, sendMoney))
+  //     // 送金モーダルを閉じる
+  //     setMpdalIsOpenSend(false)
+  //     // ダッシュボードの残高更新
+  //     console.log('selector.users.remainMoney:' + selector.users.remainMoney)
+  //     console.log('testwallet:' + testwallet)
+
+  //     //setRemainMoney(testwallet)
+  //   },
+  //   [testwallet, dispatch]
+  // )
+
+  const handleClickSendMoney = async () => {
+    console.log('handleSendMoney:送金実行')
+    if (!sendMoney) {
+      alert('金額を入力してください')
+      return false
+    }
+    await dispatch(sendMoneyOperation(uid, modalOtherUserData, sendMoney))
+    // 送金モーダルを閉じる
+    setMpdalIsOpenSend(false)
+    // ダッシュボードの残高更新
+    console.log('selector.users.remainMoney:' + selector.users.remainMoney)
+    console.log('testwallet:' + testwallet)
+  }
 
   // 他ユーザ情報
   const [otherUsersInfo, setOtherUsersInfo] = useState([])
@@ -95,7 +115,7 @@ const Dashboard = () => {
     <div>
       <h2>ダッシュボード</h2>
       <p>{userName}さん、ようこそ</p>
-      <p>残高：{remainMoney}</p>
+      <p>残高：{testwallet}</p>
 
       <h3>ユーザ一覧</h3>
       <table>
