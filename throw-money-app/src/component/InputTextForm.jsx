@@ -2,6 +2,7 @@ import React from 'react'
 
 // テキストフォームのコンポーネント
 export const InputTextForm = (props) => {
+  console.log('InputTextFormコンポーネント')
   return (
     <div>
       <label htmlFor={props.name}>

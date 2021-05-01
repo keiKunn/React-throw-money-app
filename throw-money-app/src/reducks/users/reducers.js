@@ -15,6 +15,11 @@ export const UsersReducer = (state = initialState.users, action) => {
         ...state,
         ...action.payload,
       }
+    case Actions.SEND_MONEY:
+      return {
+        ...state,
+        ...action.payload,
+      }
     case Actions.LOGOUT_USER:
       return {
         ...state,
